@@ -6,15 +6,9 @@ from datetime import timedelta
 
 
 class Queue:
-    __slots__ = [
-        "name",
-        "priority",
-        "prefix",
-        "soft_timeout",
-        "hard_timeout",
-        "max_retries",
-    ]
-
+    """
+    A Queue represents a queue of jobs.
+    """
     def __init__(self, name=None, priority=-1, prefix=None, soft_timeout=None, hard_timeout=None, max_retries=None):
         self.prefix = re.sub(r"[^a-zA-Z0-9_.-]", "", prefix or "wakaq")
         self.name = re.sub(r"[^a-zA-Z0-9_.-]", "", name)
@@ -42,6 +36,12 @@ class Queue:
 
     @classmethod
     def create(cls, obj, queues_by_name=None):
+        """
+        Create a Queue from a string, tuple, or Queue instance.
+
+        :param obj: The object to create the queue from.
+        :param queues_by_name: A mapping of queue names to Queue instances.
+        """
         if isinstance(obj, cls):
             if queues_by_name is not None and obj.name not in queues_by_name:
                 raise Exception(f"Unknown queue: {obj.name}")
@@ -62,8 +62,14 @@ class Queue:
 
     @property
     def broker_key(self):
+        """
+        The broker key for this queue.
+        """
         return f"{self.prefix}:{self.name}"
 
     @property
     def broker_eta_key(self):
+        """
+        The broker key for the ETA queue for this queue.
+        """
         return f"{self.prefix}:eta:{self.name}"
